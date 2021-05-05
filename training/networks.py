@@ -1,5 +1,7 @@
-# Adding Spectral Normalization to convolutional layers
-
+import tensorflow as tf
+from tensorflow.keras.layers import Input, Dense, Reshape, Flatten, Concatenate, Conv2D, Conv2DTranspose, GlobalAveragePooling2D, UpSampling2D, LeakyReLU, ReLU, Add, Multiply, Lambda, Dot, BatchNormalization, Activation, ZeroPadding2D, Cropping2D, Cropping1D
+from tensorflow.keras.models import Sequential, Model, load_model
+import tensorflow.keras.backend as K
 from tensorflow.python.keras.utils import conv_utils
 from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import math_ops
@@ -7,7 +9,6 @@ from tensorflow.python.ops import sparse_ops
 from tensorflow.python.ops import gen_math_ops
 from tensorflow.python.ops import standard_ops
 from tensorflow.python.eager import context
-from tensorflow.python.framework import tensor_shape
 
 
 def l2normalize(v, eps=1e-12):
@@ -287,10 +288,9 @@ def build_generator(input_shape):
         1, 1), kernel_initializer=init, padding='valid', activation='tanh')(g5)
     return Model(inp, g6, name='G')
 
+
 # Siamese Network
-
-
-def build_siamese(input_shape):
+def build_siamese(input_shape, vec_len=128):
     h, w, c = input_shape
     inp = Input(shape=input_shape)
     g1 = conv2d(inp, 256, kernel_size=(h, 3),
@@ -301,9 +301,8 @@ def build_siamese(input_shape):
     g5 = Dense(vec_len)(g4)
     return Model(inp, g5, name='S')
 
+
 # Discriminator (Critic) Network
-
-
 def build_critic(input_shape):
     h, w, c = input_shape
     inp = Input(shape=input_shape)
