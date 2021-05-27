@@ -37,8 +37,9 @@ def train_all(a, b, args):
         sa2 = args.siam(aa3, training=True)
 
         # identity mapping loss
-        loss_id = (L.mae(bb, fid) + L.mae(bb2, fid2) + L.mae(bb3, fid3)) / \
-                  3.  # loss_id = 0. IF THE IDENTITY LOSS TERM IS NOT NEEDED
+        loss_id = (L.mae(bb, fid) + L.mae(bb2, fid2) + L.mae(bb3, fid3)) / 3.
+        # loss_id = 0. IF THE IDENTITY LOSS TERM IS NOT NEEDED
+
         # travel loss
         loss_m = L.loss_travel(sa, sab, sa2, sab2) + L.loss_siamese(sa, sa2)
         # generator and critic losses
@@ -48,7 +49,7 @@ def train_all(a, b, args):
         loss_d = (loss_dr + loss_df) / 2.
         # generator+siamese total loss
         # CHANGE LOSS WEIGHTS HERE  (COMMENT OUT +w*loss_id IF THE IDENTITY LOSS TERM IS NOT NEEDED)
-        lossgtot = loss_g + 10. * loss_m + 0.5 * loss_id
+        lossgtot = loss_g + args.travel_loss_weight * loss_m + args.id_loss_weight * loss_id
 
     # computing and applying gradients
     grad_gen = tape_gen.gradient(

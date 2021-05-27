@@ -19,7 +19,6 @@ class Losses():
                             axis=[-1]) * tf.nn.l2_normalize(sab-sab1, axis=[-1])), axis=-1))
         return l1+l2
 
-
     def loss_siamese(self, sa, sa1):
         logits = tf.sqrt(tf.reduce_sum((sa-sa1)**2, axis=-1, keepdims=True))
         return tf.reduce_mean(tf.square(tf.maximum((self.delta - logits), 0)))

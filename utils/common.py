@@ -11,7 +11,7 @@ class Common_helpers():
         self.IH = Inversion_helpers(args)
 
     # Generate spectrograms from waveform array
-    def tospec(self,data):
+    def tospec(self, data):
         specs = np.empty(data.shape[0], dtype=object)
         for i in range(data.shape[0]):
             x = data[i]
@@ -60,7 +60,7 @@ class Common_helpers():
     def testass(self, a):
         but = False
         con = np.array([])
-        nim = a.self.args.shape[0]
+        nim = a.shape[0]
         for i in range(nim):
             im = a[i]
             im = np.squeeze(im)

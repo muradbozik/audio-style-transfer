@@ -214,9 +214,6 @@ class DenseSN(Dense):
             return self.activation(outputs)
         return outputs
 
-# -------------------------------------------------------------------------------------------------------------------------------------
-
-# Networks Architecture
 
 init = tf.keras.initializers.he_uniform()
 
@@ -254,8 +251,6 @@ def deconv2d(layer_input, layer_res, filters, kernel_size=4, conc=True, scalev=F
     return u
 
 # Extract function: splitting spectrograms
-
-
 def extract_image(im):
     im1 = Cropping2D(((0, 0), (0, 2*(im.shape[2]//3))))(im)
     im2 = Cropping2D(((0, 0), (im.shape[2]//3, im.shape[2]//3)))(im)
@@ -263,16 +258,16 @@ def extract_image(im):
     return im1, im2, im3
 
 # Assemble function: concatenating spectrograms
-
-
 def assemble_image(lsim):
     im1, im2, im3 = lsim
     imh = Concatenate(2)([im1, im2, im3])
     return imh
 
+
+# -------------------------------------------------------------------------------------------------------------------------------------
+# Networks Architecture
+
 # U-NET style architecture
-
-
 def build_generator(input_shape):
     h, w, c = input_shape
     inp = Input(shape=input_shape)
@@ -284,8 +279,7 @@ def build_generator(input_shape):
     # upscaling
     g4 = deconv2d(g3, g2, 256, kernel_size=(1, 7), strides=(1, 2))
     g5 = deconv2d(g4, g1, 256, kernel_size=(1, 9), strides=(1, 2), bnorm=False)
-    g6 = ConvSN2DTranspose(1, kernel_size=(h, 1), strides=(
-        1, 1), kernel_initializer=init, padding='valid', activation='tanh')(g5)
+    g6 = ConvSN2DTranspose(1, kernel_size=(h, 1), strides=(1, 1), kernel_initializer=init, padding='valid', activation='tanh')(g5)
     return Model(inp, g6, name='G')
 
 
@@ -293,8 +287,7 @@ def build_generator(input_shape):
 def build_siamese(input_shape, vec_len=128):
     h, w, c = input_shape
     inp = Input(shape=input_shape)
-    g1 = conv2d(inp, 256, kernel_size=(h, 3),
-                strides=1, padding='valid', sn=False)
+    g1 = conv2d(inp, 256, kernel_size=(h, 3), strides=1, padding='valid', sn=False)
     g2 = conv2d(g1, 256, kernel_size=(1, 9), strides=(1, 2), sn=False)
     g3 = conv2d(g2, 256, kernel_size=(1, 7), strides=(1, 2), sn=False)
     g4 = Flatten()(g3)
@@ -306,8 +299,7 @@ def build_siamese(input_shape, vec_len=128):
 def build_critic(input_shape):
     h, w, c = input_shape
     inp = Input(shape=input_shape)
-    g1 = conv2d(inp, 512, kernel_size=(h, 3),
-                strides=1, padding='valid', bnorm=False)
+    g1 = conv2d(inp, 512, kernel_size=(h, 3), strides=1, padding='valid', bnorm=False)
     g2 = conv2d(g1, 512, kernel_size=(1, 9), strides=(1, 2), bnorm=False)
     g3 = conv2d(g2, 512, kernel_size=(1, 7), strides=(1, 2), bnorm=False)
     g4 = Flatten()(g3)

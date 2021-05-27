@@ -8,13 +8,13 @@ import os
 from utils.common import Common_helpers
 from utils.inversion import Inversion_helpers
 
+
 class Training_helpers():
     def __init__(self, args, aspec):
         self.args = args
         self.aspec = aspec
         self.IH = Inversion_helpers(args)
         self.CH = Common_helpers(args)
-
 
     # Load past models from path to resume training or test
     def load(self, path):
@@ -75,10 +75,10 @@ class Training_helpers():
         axs[1].imshow(np.flip(ab, -2), cmap=None)
         axs[1].axis('off')
         axs[1].set_title('Generated')
-        plt.show()
+        plt.savefig(os.path.join(path, "spectrograms.png"), format='png')
+
 
     # Save in training loop
-
     # use custom save_path (i.e. Drive '../content/drive/My Drive/')
     def save_end(self, epoch, gloss, closs, mloss, n_save=3, save_path='../content/'):
         if epoch % n_save == 0:
@@ -94,9 +94,11 @@ class Training_helpers():
     def get_networks(self, load_model=False, path=None):
         if not load_model:
             gen, critic, siam = self.build()
+            print('Built networks')
         else:
             gen, critic, siam = self.load(path)
-        print('Built networks')
+            print('Loaded networks')
+
 
         opt_gen = Adam(0.0001, 0.5)
         opt_disc = Adam(0.0001, 0.5)
